@@ -1,0 +1,143 @@
++font-face("zocial", font-files("zocial-regular-webfont.ttf", "zocial-regular-webfont.woff", "zocial-regular-webfont.svg"), "zocial-regular-webfont.eot", normal, normal)
+
++establish-baseline
+
+html
+	overflow-y: scroll
+	height: 100%
+
+body
+	background: inline-image("bg.png")
+	max-width: 460px
+	margin: 0 auto
+	font-family: 'Open Sans', sans-serif
+	color: #fafafa
+	text-rendering: optimizeLegibility
+	padding: 30px
+	-webkit-font-smoothing: antialiased
+
+a
+	text-decoration: none
+
++animate-fadeIn
++animate-rotateIn
+
+.social
+	a
+		height: 32px
+		overflow: hidden
+		display: inline-block
+		width: 32px
+		margin-right: 5px
+		+transform(translateZ(0))
+		+perspective(1000)
+		+backface-visibility(hidden)
+
+[data-icon]
+	color: #ef803e
+	font-style: normal
+	font-weight: normal
+	display: block
+	width: 32px
+	height: 32px
+	background-color: #333
+	+border-radius(50px)
+	+single-transition(background-color, 0.2s, linear, 0s )
+	position: relative
+	&:before
+		font-family: "zocial"
+		content: attr(data-icon)
+		speak: none
+		+adjust-font-size-to(16px)
+		position: absolute
+		left: 8px
+		top: 4px
+	&:hover
+		background-color: #09192a
+
+#twitter
+	+animation(fadeIn 2.5s ease-out 0.5s 1 both)
+#dribbble
+	+animation(fadeIn 2.5s ease-out 1.3s 1 both)
+#xing
+	+animation(fadeIn 2.5s ease-out 2.1s 1 both)
+
+h2,
+h3,
+p
+	text-shadow: 0 1px 0 #e83a0c
+
+h2
+	+adjust-font-size-to(24px)
+h3
+	+adjust-font-size-to(16px)
+
+#sayhi
+	unicode-bidi: bidi-override
+	direction: rtl
+	color: #333
+	text-shadow: none
+	display: inline-block
+	+animation(rotateIn 1.5s ease-out 3s 1 both)
+	// +opacity(0)
+	// +transition(opacity 1s ease-in-out)
+
+// [placeholder]
+// 	font-style: italic
+// input,
+// textarea
+// 	+box-sizing(border-box)
+// 	width: 100%
+// 	padding: 10px
+// 	+trailer(.5)
+// 	color: #8e8e8e
+// 	border: 0
+// 	background: #333
+// 	font-style: normal
+// 	+border-radius(3px)
+// 	font-family: 'Open Sans', sans-serif
+// 	+adjust-font-size-to(14px)
+// 	outline: none
+
+// #submit
+// 	cursor: pointer
+// 	font-weight: 600
+// 	color: #fafafa
+// 	text-shadow: 0 -1px 0 #e04500
+// 	+transition(box-shadow .3s ease-in-out)
+// 	+box-shadow(0 0 5px #da5121, 0 1px 0 #ffb676 inset)
+// 	+background-image(linear-gradient(#f68847, #f2773a))
+// 	position: relative
+// 	&:hover
+// 		+box-shadow(0 0 10px darken(#da5121, 10%), 0 1px 0 #ffb676 inset)
+// 	&:active
+// 		top: 1px
+// 	&.sending
+// 		+animation(scaleUp 1.2s ease-out both)
+
+// textarea
+// 	&.addHeight
+// 		+animation(textareaHeight 1s normal)
+// 		+animation-iteration-count(1)
+// 		+animation-fill-mode(both)
+
+// .error
+// 	+box-shadow(0 0 7px 2px #af0a0a)
+// #response
+// 	+transition(opacity 1s ease-in-out)
+// 	+opacity(0)
+// 	&.fadeIn
+// 		+opacity(1)
+// +keyframes(textareaHeight)
+// 	0%
+// 		min-height: 92px
+// 	100%
+// 		min-height: 120px
+
+// +keyframes(scaleUp)
+// 	0%
+// 		+transform(scale(1))
+// 		+opacity(1)
+// 	100%
+// 		+transform(scale(4))
+// 		+opacity(0)
