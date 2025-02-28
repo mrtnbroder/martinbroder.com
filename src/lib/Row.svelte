@@ -1,8 +1,5 @@
 <script>
-  export let href = ""
-  export let name = ""
-  export let description = ""
-  export let link = ""
+  let { href = "", name = "", description = "", link = "" } = $props()
 </script>
 
 <div class="border p-4 rounded-sm border-gray-700 flex-auto flex items-center">

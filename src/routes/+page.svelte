@@ -30,21 +30,19 @@
 
   <main>
     <h1 class="mb-10 text-xl text-pretty">
-      I'm an interdisciplinary designer & <span class="developer">developer</span>,
-      <span class="climber">climber</span>, adventurer and <span class="optimist">optimist</span> with
+      I'm an interdisciplinary <span class="designer">designer</span> & <span class="developer">developer</span>,
+      <span class="climber">climber</span> and <span class="optimist">optimist</span> with
       a focus on startups and agencies to help bring their products to life.
     </h1>
-
     <h2 class="text-lg">Projects & Companies.</h2>
     <p class="mb-6 text-gray-400">I am honored to have worked with these companies.</p>
-
     <div class="flex flex-col space-y-4">
-      <!-- <Row
+      <Row
         href="https://bundesdruckerei.de"
         name="Bundesdruckerei"
         description="Crafting a digital design system for the german government."
         link="bundesdruckerei.de"
-      /> -->
+      />
       <Row
         href="https://anyplace.com"
         name="Anyplace Inc."
@@ -78,10 +76,22 @@
 </div>
 
 <style lang="postcss">
-  .climber {
-    @apply transition duration-300 ease-in-out bg-clip-text;
+  @reference "tailwindcss/theme";
+
+  .designer {
+    @apply transition duration-300 ease-in-out bg-clip-text bg-linear-to-r from-white to-white;
     &:hover {
-      @apply text-gray-800;
+      @apply text-transparent from-pink-400 to-purple-400;
+    }
+    cursor:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>🎨</text></svg>")
+        16 0,
+      auto; /*!emojicursor.app*/
+  }
+  .climber {
+    @apply transition duration-300 ease-in-out bg-clip-text bg-linear-to-r from-white to-white;
+    &:hover {
+      @apply text-transparent from-teal-400 to-blue-400;
     }
     cursor:
       url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'  width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>🧗</text></svg>")
