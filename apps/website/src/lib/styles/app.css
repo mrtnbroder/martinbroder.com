@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@theme {
+  --text-*: initial;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
+
+  --text-body1: 16px;
+  --text-body1--line-height: 28px;
+  --text-body2: 16px;
+  --text-body2--line-height: 28px;
+  --text-body3: 14px;
+  --text-body3--line-height: 28px;
+  --text-body4: 10px;
+  --text-body4--line-height: 16px;
+
+  --text-heading1: 28px;
+  --text-heading1--line-height: 40px;
+  --text-heading2: 20px;
+  --text-heading2--line-height: 28px;
+
+  --font-*: initial;
+  --font-sans:
+    "Outfit", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-serif:
+    "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times,
+    serif;
+
+  --breakpoint-*: initial;
+  --breakpoint-xs: 42rem;
+
+  --container-*: initial;
+  --container-sm: 39rem;
+
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  --color-gray-120: #12131a;
+  --color-gray-110: #0b0b0f;
+  --color-gray-100: #12131a;
+  --color-gray-95: #1b1d26;
+  --color-gray-90: #252833;
+  --color-gray-80: #3a3d4d;
+  --color-gray-60: #696c80;
+  --color-gray-40: #9a9eb2;
+  --color-gray-20: #d8dae5;
+  --color-gray-10: #ebecf2;
+
+  --color-indigo-500: oklch(0.585 0.233 277.117);
+
+  --color-steel-100: #eaebf1;
+  --color-steel-200: #d1d4dc;
+  --color-steel-300: #babdc7;
+  --color-steel-400: #a3a6b2;
+  --color-steel-500: #8b8f9c;
+  --color-steel-600: #757887;
+  --color-steel-700: #606373;
+  --color-steel-800: #4c4f5f;
+  --color-steel-900: #393b4b;
+  --color-steel-1000: #272939;
+  --color-steel-1100: #222433;
+}
+
+/* @theme inline {
+  --animate-fadeIn: fadeIn 0.5s var(--delay, 0s) forwards;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+} */
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-90, currentColor);
+  }
+}
+
+@layer utilities {
+  .down:focus-visible {
+    @apply outline-2 outline-offset-2 outline-indigo-500 outline-solid;
+  }
+
+  /* .fadeIn {
+    @apply animate-fadeIn opacity-0;
+  } */
+}
+
+html {
+  @apply text-gray-40 bg-gray-100;
+  @apply font-sans font-normal antialiased;
+  /* text-box: trim-both ex; */
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fade-in {
+    --delay: 0s;
+    transition-property: opacity, transform;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: var(--delay, 0s);
+
+    @starting-style {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+  }
+}
