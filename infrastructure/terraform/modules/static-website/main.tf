@@ -1,17 +1,3 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "6.2"
-    }
-  }
-}
-
-# Configure the AWS Provider
-provider "aws" {
-  region = var.aws_region
-}
-
 # AWS Certificate Manager (ACM) requires a provider in the us-east-1 region
 # for certificates used with CloudFront.
 provider "aws" {
@@ -19,16 +5,15 @@ provider "aws" {
   region = "us-east-1"
 }
 
+locals {
+  # Use the subdomain if provided, otherwise use the root domain
+  domain_name = var.subdomain == "" ? var.root_domain_name : "${var.subdomain}.${var.root_domain_name}"
+}
+
 # --- S3 Bucket for Static Website Hosting ---
 
 resource "aws_s3_bucket" "website" {
-  bucket = var.domain_name_bucket
-
-  tags = {
-    Environment = "staging"
-    Project     = "Personal Website"
-    ManagedBy   = "Terraform"
-  }
+  bucket = var.s3_bucket_name
 }
 
 resource "aws_s3_bucket_website_configuration" "website_config" {
@@ -43,11 +28,12 @@ resource "aws_s3_bucket_website_configuration" "website_config" {
   }
 }
 
+
 # --- CloudFront Origin Access Control (OAC) ---
 
 # New resource to create an OAC for CloudFront
 resource "aws_cloudfront_origin_access_control" "oac" {
-  name                              = var.domain_name_oac
+  name                              = var.cf_oac_name
   description                       = "Origin Access Control for S3 bucket"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
@@ -87,39 +73,39 @@ data "aws_route53_zone" "primary" {
   private_zone = false
 }
 
-# ADDED: Data source to find your existing ACM certificate.
 # This tells Terraform to look for a certificate that is already issued
 # for your root domain. This works if it's a wildcard certificate.
 data "aws_acm_certificate" "root_cert" {
-  provider   = aws.us_east_1
-  domain     = var.root_domain_name
-  statuses   = ["ISSUED"]
+  provider    = aws.us_east_1
+  domain      = var.root_domain_name
+  statuses    = ["ISSUED"]
   most_recent = true
 }
+
 
 # --- CloudFront Distribution ---
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
-    domain_name = aws_s3_bucket.website.bucket_regional_domain_name
-    origin_id   = "S3-${var.domain_name}"
+    domain_name              = aws_s3_bucket.website.bucket_regional_domain_name
+    origin_id                = var.s3_bucket_name
     origin_access_control_id = aws_cloudfront_origin_access_control.oac.id
   }
 
   enabled             = true
   is_ipv6_enabled     = true
   default_root_object = "index.html"
-  http_version = "http2and3"
-  comment = "CloudFront distribution for ${var.domain_name}"
+  http_version        = "http2and3"
+  comment             = "CloudFront distribution for ${local.domain_name}"
 
-  aliases = [var.domain_name] # alias for staging.martinbroder.com
+  aliases = [local.domain_name] # alias for staging.martinbroder.com
 
   default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD"]
-    cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "S3-${var.domain_name}"
+    allowed_methods        = ["GET", "HEAD"]
+    cached_methods         = ["GET", "HEAD"]
+    target_origin_id       = var.s3_bucket_name
     viewer_protocol_policy = "redirect-to-https"
-    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6" # Managed-CachingOptimized
+    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6" # Managed-CachingOptimized
   }
 
   restrictions {
@@ -133,19 +119,18 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     ssl_support_method  = "sni-only"
   }
 
-   # ADDED: Staging tags
-  tags = {
-    Environment = "staging"
-    Project     = "Personal Website"
-    ManagedBy   = "Terraform"
-  }
+  # Use common tags and merge a resource-specific "Name" tag
+  # tags = merge(var.common_tags, {
+  #   Name = "${replace(local.full_domain_name, ".", "-")}-cf-distribution"
+  # })
 }
+
 
 # --- Route 53 Alias Record ---
 
 resource "aws_route53_record" "website_alias" {
   zone_id = data.aws_route53_zone.primary.zone_id
-  name    = var.domain_name # Creates record for staging.martinbroder.com
+  name    = local.domain_name # Creates record for *.martinbroder.com
   type    = "A"
 
   alias {

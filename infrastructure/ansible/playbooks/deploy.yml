@@ -1,0 +1,32 @@
+# This playbook deploys the personal website infrastructure using Terraform and syncs the website content to an S3 bucket.
+
+- name: Deploy Personal Website Infrastructure
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: "Run Terraform to provision infrastructure for '{{ env_name }}' environment"
+      community.general.terraform:
+        project_path: "terraform/environments/{{ env_name }}"
+        state: present # This ensures the infrastructure exists as defined
+        force_init: true
+      register: terraform_output
+
+    - name: "Print S3 bucket name from Terraform output"
+      debug:
+        msg: "The S3 bucket name is {{ terraform_output.outputs.s3_bucket_name.value }}"
+
+    - name: "Deploy website content to '{{ env_name }}' S3 bucket"
+      community.aws.s3_sync:
+        bucket: "{{ terraform_output.outputs.s3_bucket_name.value }}"
+        file_root: "apps/website/build/"
+        delete_removed: true
+      when: terraform_output.outputs.s3_bucket_name.value is defined
+
+    - name: "Invalidate CloudFront cache"
+      community.aws.cloudfront_invalidation:
+        distribution_id: "{{ terraform_output.outputs.cloudfront_distribution_id.value }}"
+        paths:
+          - "/*"
+      when: terraform_output.outputs.cloudfront_distribution_id.value is defined

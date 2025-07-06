@@ -1,6 +1,6 @@
 output "website_url" {
   description = "The URL of the deployed website."
-  value       = "https://${var.domain_name}"
+  value       = "https://${local.domain_name}"
 }
 
 output "s3_bucket_name" {
