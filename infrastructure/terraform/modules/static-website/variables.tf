@@ -4,6 +4,11 @@ variable "aws_region" {
   default     = "eu-central-1"
 }
 
+variable "cf_cache_policy_id" {
+  description = "The CloudFront cache policy ID."
+  type        = string
+}
+
 variable "root_domain_name" {
   description = "The root domain name for the Route 53 hosted zone"
   type        = string
@@ -25,7 +30,7 @@ variable "s3_bucket_name" {
   type        = string
 }
 
-variable "cf_oac_name" {
-  description = "The CloudFront Origin Access Control name."
+variable "cf_oac_id" {
+  description = "The CloudFront Origin Access Control ID."
   type        = string
 }

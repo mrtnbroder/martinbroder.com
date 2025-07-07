@@ -32,13 +32,8 @@ resource "aws_s3_bucket_website_configuration" "website_config" {
 # --- CloudFront Origin Access Control (OAC) ---
 
 # New resource to create an OAC for CloudFront
-resource "aws_cloudfront_origin_access_control" "oac" {
-  name                              = var.cf_oac_name
-  description                       = "Origin Access Control for S3 bucket"
-  origin_access_control_origin_type = "s3"
-  signing_behavior                  = "always"
-  signing_protocol                  = "sigv4"
-
+data "aws_cloudfront_origin_access_control" "oac" {
+  id = var.cf_oac_id
 }
 
 # Define a bucket policy that allows access ONLY from our CloudFront OAC
@@ -49,6 +44,7 @@ resource "aws_s3_bucket_policy" "website_policy" {
 
 data "aws_iam_policy_document" "s3_policy" {
   statement {
+    sid       = "AllowCloudFrontServicePrincipalReadOnly"
     actions   = ["s3:GetObject"]
     resources = ["${aws_s3_bucket.website.arn}/*"]
 
@@ -89,7 +85,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
     domain_name              = aws_s3_bucket.website.bucket_regional_domain_name
     origin_id                = var.s3_bucket_name
-    origin_access_control_id = aws_cloudfront_origin_access_control.oac.id
+    origin_access_control_id = data.aws_cloudfront_origin_access_control.oac.id
   }
 
   enabled             = true
@@ -98,14 +94,15 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   http_version        = "http2and3"
   comment             = "CloudFront distribution for ${local.domain_name}"
 
-  aliases = [local.domain_name] # alias for staging.martinbroder.com
+  aliases = [local.domain_name] # Use the provided domain aliases
 
   default_cache_behavior {
     allowed_methods        = ["GET", "HEAD"]
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = var.s3_bucket_name
     viewer_protocol_policy = "redirect-to-https"
-    cache_policy_id        = "658327ea-f89d-4fab-a63d-7e88639e58f6" # Managed-CachingOptimized
+    cache_policy_id        = var.cf_cache_policy_id # Use the provided cache policy ID
+
   }
 
   restrictions {
@@ -116,8 +113,11 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   viewer_certificate {
     acm_certificate_arn = data.aws_acm_certificate.root_cert.arn
+    minimum_protocol_version = "TLSv1.2_2021" # Use a secure minimum protocol version
     ssl_support_method  = "sni-only"
   }
+
+
 
   # Use common tags and merge a resource-specific "Name" tag
   # tags = merge(var.common_tags, {
