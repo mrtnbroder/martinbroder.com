@@ -28,14 +28,6 @@ resource "aws_s3_bucket_website_configuration" "website_config" {
   }
 }
 
-
-# --- CloudFront Origin Access Control (OAC) ---
-
-# New resource to create an OAC for CloudFront
-data "aws_cloudfront_origin_access_control" "oac" {
-  id = var.cf_oac_id
-}
-
 # Define a bucket policy that allows access ONLY from our CloudFront OAC
 resource "aws_s3_bucket_policy" "website_policy" {
   bucket = aws_s3_bucket.website.id
@@ -85,7 +77,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
     domain_name              = aws_s3_bucket.website.bucket_regional_domain_name
     origin_id                = var.s3_bucket_name
-    origin_access_control_id = data.aws_cloudfront_origin_access_control.oac.id
+    origin_access_control_id = var.cf_oac_id
   }
 
   enabled             = true
@@ -112,9 +104,9 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = data.aws_acm_certificate.root_cert.arn
+    acm_certificate_arn      = data.aws_acm_certificate.root_cert.arn
     minimum_protocol_version = "TLSv1.2_2021" # Use a secure minimum protocol version
-    ssl_support_method  = "sni-only"
+    ssl_support_method       = "sni-only"
   }
 
 

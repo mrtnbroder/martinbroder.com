@@ -31,6 +31,6 @@ variable "s3_bucket_name" {
 }
 
 variable "cf_oac_id" {
-  description = "The CloudFront Origin Access Control ID."
+  description = "The ID of the CloudFront Origin Access Control to use."
   type        = string
 }
