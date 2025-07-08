@@ -1,4 +1,4 @@
-# martinbroder.com
+# martinbroder.com (WIP)
 
 This repository is a monorepo and contains the source code for my personal website, [www.martinbroder.com](https://www.martinbroder.com), along with the infrastructure-as-code to deploy it.
 
@@ -6,7 +6,7 @@ This repository is a monorepo and contains the source code for my personal websi
 
 The project is a monorepo containing two main parts: the website application and the infrastructure.
 
-### Application (`apps/website`)
+### Application (`apps/website`) (WIP, not yet deployed)
 
 *   **Framework**: [SvelteKit](https://kit.svelte.dev/)
 *   **Language**: [TypeScript](https://www.typescriptlang.org/)
