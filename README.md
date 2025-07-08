@@ -37,10 +37,23 @@ The repository is structured as a monorepo:
 
 ### Terraform Structure
 
-The Terraform code is organized into modules and environments:
+The Terraform code is organized into a bootstrap layer, reusable modules, and distinct environments. This separation ensures that shared resources are managed independently and that environments are kept clean and reproducible.
 
-*   `infrastructure/terraform/modules/static-website`: A reusable module to create the S3 bucket, and other resources required for a static website.
-*   `infrastructure/terraform/environments/`: Contains the configuration for each environment (`develop`, `staging`, `production`). Each environment has its own `main.tf` and `backend.tf` to manage its state independently.
+```
+infrastructure/terraform/
+├── bootstrap/        # Manages shared, foundational resources (e.g., OAC)
+├── environments/
+│   ├── develop/      # Configuration for the development environment
+│   ├── staging/      # Configuration for the staging environment
+│   └── production/   # Configuration for the production environment
+├── modules/
+│   └── static-website/ # Reusable module for deploying the website
+└── terraform.tf      # Global Terraform provider configuration
+```
+
+*   `infrastructure/terraform/bootstrap`: This directory contains the root configuration for creating shared resources that are prerequisites for all environments. In this case, it manages the **CloudFront Origin Access Control (OAC)**, which is used by all CloudFront distributions. It has its own separate state file.
+*   `infrastructure/terraform/modules/static-website`: A reusable module to create the S3 bucket, CloudFront distribution, and other resources required for a static website.
+*   `infrastructure/terraform/environments/`: Contains the configuration for each environment (`develop`, `staging`, `production`). Each environment uses the `static-website` module and retrieves the shared OAC ID from the `bootstrap` state using a `terraform_remote_state` data source.
 
 ## Prerequisites
 
@@ -107,23 +120,26 @@ The deployment process is automated via GitHub Actions, but can also be performe
 
 ### Infrastructure Deployment
 
-To apply changes to the infrastructure:
+The infrastructure is deployed in two stages: bootstrapping the shared resources and then deploying the environment-specific resources.
 
-1.  **Navigate to the environment directory:**
+1.  **Deploy Bootstrap Resources:**
+
+    This step only needs to be run once or when the shared resources need an update.
+
+    ```bash
+    cd infrastructure/terraform/bootstrap
+    terraform init
+    terraform plan
+    terraform apply
+    ```
+
+2.  **Deploy Environment Resources:**
+
+    To apply changes to a specific environment:
 
     ```bash
     cd infrastructure/terraform/environments/<environment>
-    ```
-
-2.  **Initialize Terraform:**
-
-    ```bash
     terraform init
-    ```
-
-3.  **Plan and apply the changes:**
-
-    ```bash
     terraform plan
     terraform apply
     ```
