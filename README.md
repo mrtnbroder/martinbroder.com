@@ -1,6 +1,6 @@
-# martinbroder.com Monorepo
+# martinbroder.com
 
-This repository contains the source code for my personal website, [martinbroder.com](https://martinbroder.com), along with the infrastructure-as-code to deploy it.
+This repository is a monorepo and contains the source code for my personal website, [www.martinbroder.com](https://www.martinbroder.com), along with the infrastructure-as-code to deploy it.
 
 ## Tech Stack
 
