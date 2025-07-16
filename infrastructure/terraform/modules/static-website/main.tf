@@ -7,7 +7,7 @@ provider "aws" {
 
 locals {
   # Use the subdomain if provided, otherwise use the root domain
-  domain_name = var.subdomain == "" ? var.root_domain_name : "${var.subdomain}.${var.root_domain_name}"
+  domain_name = var.subdomain == "" ? var.domain_name : "${var.subdomain}.${var.domain_name}"
 }
 
 # --- S3 Bucket for Static Website Hosting ---
@@ -57,7 +57,7 @@ data "aws_iam_policy_document" "s3_policy" {
 # --- DNS and SSL Certificate ---
 
 data "aws_route53_zone" "primary" {
-  name         = var.root_domain_name # Use the root domain to find the hosted zone
+  name         = var.domain_name # Use the root domain to find the hosted zone
   private_zone = false
 }
 
@@ -65,7 +65,7 @@ data "aws_route53_zone" "primary" {
 # for your root domain. This works if it's a wildcard certificate.
 data "aws_acm_certificate" "root_cert" {
   provider    = aws.us_east_1
-  domain      = var.root_domain_name
+  domain      = var.domain_name
   statuses    = ["ISSUED"]
   most_recent = true
 }

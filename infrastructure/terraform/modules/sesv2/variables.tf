@@ -1,4 +1,4 @@
-variable "root_domain_name" {
+variable "domain_name" {
   description = "The root domain name for SES configuration."
   type        = string
 }

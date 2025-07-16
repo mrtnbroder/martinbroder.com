@@ -36,7 +36,7 @@ output "sesv2_mail_from_mx_failure_behavior" {
 
 output "ses_domain_name" {
   description = "The domain name configured for SES."
-  value       = var.root_domain_name
+  value       = var.domain_name
 }
 
 output "ses_region" {

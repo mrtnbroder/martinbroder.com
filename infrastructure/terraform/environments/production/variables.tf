@@ -14,7 +14,7 @@ variable "tf_remote_state_bucket" {
   default     = "martinbroder-com-s3-terraform-state"
 }
 
-variable "root_domain_name" {
+variable "domain_name" {
   description = "The root domain name for the application."
   type        = string
   default     = "martinbroder.com"
