@@ -1,3 +1,7 @@
+# *-- MANUALLY ADDED ---
+*.tfbackend
+# --- MANUALLY ADDED --*
+
 # Local .terraform directories
 .terraform/
 
