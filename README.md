@@ -122,6 +122,44 @@ The deployment process is automated via GitHub Actions, but can also be performe
 
 The infrastructure is deployed in two stages: bootstrapping the shared resources and then deploying the environment-specific resources.
 
+#### Configuration
+
+Before deploying, you need to configure Terraform with the appropriate backend and variable files:
+
+1.  **Backend Configuration:**
+
+    Create a `config.s3.tfbackend` file in both the bootstrap directory and each environment directory to configure the S3 backend for Terraform state:
+
+    ```bash
+    # Example: infrastructure/terraform/bootstrap/config.s3.tfbackend
+    bucket = "your-terraform-state-bucket"
+    key    = "bootstrap/terraform.tfstate"
+    region = var.aws_region # you can also use variable interpolation here
+    ```
+
+    ```bash
+    # Example: infrastructure/terraform/environments/staging/config.s3.tfbackend
+    bucket = "your-terraform-state-bucket"
+    key    = "staging/terraform.tfstate"
+    region = var.aws_region # you can also use variable interpolation here
+    ```
+
+2.  **Variable Configuration:**
+
+    Override default variables by creating `.auto.tfvars` files in each environment directory. For example, to customize the staging environment:
+
+    ```bash
+    # infrastructure/terraform/environments/staging/staging.auto.tfvars
+    subdomain = "staging"
+    environment = "staging"
+    aws_region = "eu-central-1"
+    tf_remote_state_bucket = "your-terraform-state-bucket"
+    ```
+
+    These files will automatically override the default values in `variables.tf` without requiring you to modify the original files.
+
+#### Deployment Steps
+
 1.  **Deploy Bootstrap Resources:**
 
     This step only needs to be run once or when the shared resources need an update.
