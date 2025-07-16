@@ -1,9 +1,6 @@
-
-provider "aws" {
-  region = var.aws_region
-}
-
-# --- CloudFront Origin Access Control (OAC) ---
+# --------------------------------------------------
+# AWS CloudFront Origin Access Control (OAC)
+# --------------------------------------------------
 
 resource "aws_cloudfront_origin_access_control" "oac" {
   name                              = var.cf_oac_name
